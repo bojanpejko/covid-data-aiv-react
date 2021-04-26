@@ -1,58 +1,104 @@
+import './App.less';
+import { Layout, Menu, Breadcrumb, Typography, Button, Popover } from 'antd';
+import {
+  DesktopOutlined,
+  UserOutlined,
+  GlobalOutlined,
+  BugOutlined,
+} from '@ant-design/icons';
 import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import { Route, Link, withRouter } from "react-router-dom";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
-  );
+//PAGES
+import Dashboard from './pages/dashboard'
+import Regions from './pages/region/region'
+import Admins from './pages/admin/admin'
+import Data from './pages/data/data'
+
+const { Content, Footer, Sider } = Layout;
+
+class App extends React.Component {
+  state = {
+    collapsed: false,
+  };
+
+  onCollapse = collapsed => {
+    console.log(collapsed);
+    this.setState({ collapsed });
+  };
+
+  render(){
+    const { collapsed } = this.state;
+    const path = this.props.location.pathname.split("/");
+    
+    return (
+      <div>
+        <Layout style={{ minHeight: '100vh' }}>
+          {
+            <Sider theme="light" collapsible collapsed={collapsed} onCollapse={this.onCollapse} breakpoint="lg">
+              <div style={{ padding: 10, paddingTop: 25, paddingBottom: 25, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img style={{ maxWidth: "90%", filter: 'invert()' }} />
+              </div>
+              <Menu theme="light" defaultSelectedKeys={path} mode="inline">
+
+                <Menu.Item key="dashboard" icon={<DesktopOutlined />}>
+                    <Link to="/">
+                      Dashboard
+                    </Link>
+                </Menu.Item>
+
+                <Menu.Item key="admin" icon={<UserOutlined />}>
+                  <Link to="/admin">
+                    Admin
+                  </Link>
+                </Menu.Item>
+
+                <Menu.Item key="region" icon={<GlobalOutlined />}>
+                  <Link to="/region">
+                    Region
+                  </Link>
+                </Menu.Item>
+
+                <Menu.Item key="data" icon={<BugOutlined />}>
+                  <Link to="/data">
+                    Data
+                  </Link>
+                </Menu.Item>
+
+              </Menu>
+            </Sider> 
+          }
+          <Layout className="site-layout">
+            <Content style={{ margin: '0 16px', padding: 25 }}>
+
+              <Breadcrumb>
+                <Breadcrumb.Item><Link to="/">COVID</Link></Breadcrumb.Item>
+                {
+                  path.map((str, i) => {
+                    var upc = str.split('-');
+                    upc = upc.map(w => { return w.charAt(0).toUpperCase() + w.slice(1); });
+                    return (
+                      <Breadcrumb.Item key={i}>
+                        {
+                          upc.join(" ")
+                        }
+                      </Breadcrumb.Item>
+                    );
+                  })
+                }
+              </Breadcrumb>
+
+              <Route exact path="/" component={Dashboard} />
+              <Route path="/admin" component={Admins} />
+              <Route path="/region" component={Regions} />
+              <Route path="/data" component={Data}/>
+
+            </Content>
+            <Footer style={{ textAlign: 'center' }}>PROJEKT AIV</Footer>
+          </Layout>
+        </Layout >
+      </div>
+    );
+  }
 }
-
-export default App;
+export default withRouter(App);
